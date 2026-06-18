@@ -1,66 +1,213 @@
-# gunsrpg
+# Guns RPG (1.20.1 Forge Port)
 
-极限挑战 · 无暇赴死 — Guns RPG 技能树移植模组（1.20.1 Forge）。
+**English** | [简体中文](README_zh-CN.md)
 
-> **整合包状态（2026-05）**：已暂时从 `mods/` 禁用（`gunsrpg-*.jar.disabled`），改用外部枪械 mod 联调。恢复：`gunsrpg-1201/tools/enable-mod.ps1`；禁用：`tools/disable-mod.ps1`。
+A Minecraft **1.20.1 Forge** port of [Guns RPG](https://github.com/Toma1O6/Guns-RPG) (originally **1.16.5** by Toma1O6).  
+This branch adds a native firearm system, survival progression, optional TaCZ integration, and modpack-oriented features such as gun-wielding mobs and Bloodmoon events.
 
-## 功能（0.1.0-alpha）
+| | |
+|---|---|
+| **Mod ID** | `gunsrpg` |
+| **Version** | `1.20.1-0.1.0-port` |
+| **Minecraft** | 1.20.1 |
+| **Forge** | 47.x (tested on 47.4.x) |
+| **Upstream** | [Toma1O6/Guns-RPG](https://github.com/Toma1O6/Guns-RPG) (`1.16.5`) |
 
-- 从 `config/gunsrpg/port_from_gunsrpg/` 加载 314 技能节点、52 天赋、装配体扩展索引
-- 技能格图标来自 Guns RPG `textures/icons/`；**装配体**显示 `weapon_mapping.json` 中的 CGM 枪图标
-- 中文/英文技能名与说明见 `assets/gunsrpg/lang/*_skills.json`
-- **O 键** `SkillTreeScreen`：技能树 / 扩展 / 天赋；选中节点 **解锁**（消耗技能点或武器扩展点）
-- **首次进世界新手礼包**（`config/gunsrpg/starter_kit.json`）：5 技能点 + 磨骨机 I / 木制子弹 / 枪械零件 / M1911 + 手枪与子弹，避免「无枪无法涨级」
-- **枪械台** `gunsrpg:gunsmith_table`：3×3 +「制造」按钮；骨粉仅此处合成
-- **CGM 枪械击杀** → 账号等级 + 技能点、武器等级 + 扩展点（`leveling_strategy.json`）
-- **天赋页** 选中查看说明与 `[已实现]`/`[未实装]`；再左键 +1 / 右键 -1 投资
-- **生存 Debuff**（对标 Guns RPG）：出血、骨折、中毒、感染；配置 `config/gunsrpg/debuff_config.json`
-  - 骨折：摔落/受击触发，减速+挖掘疲劳，冲刺/跳跃额外受伤
-  - 出血/毒/感染：阶段恶化 + 持续伤害；感染可由高阶段出血扩散
-  - 抗性技能树（`fracture_resistance_i` 等）+ 天赋（`fracture_resistance`、`fracture_delay` 等）降低几率、延缓恶化
-  - 右上角 HUD 图标；`/gunsrpg debuff status|clear|apply <type> <stage>`
-- 命令：`/gunsrpg status|reload|bootstrap`、`/gunsrpg points <n>`、`/gunsrpg unlock <技能id>`（OP）
-- 联调清单：整合包 `docs/gunsrpg_playtest.md`
+> This is an **early port**. Gameplay is largely playable, but some perks, mob visuals, and edge-case balance are still being finished. Contributions and PRs back to upstream are welcome.
 
-## 构建
+---
+
+## Features
+
+### Progression & skill tree
+
+- **Skill tree UI** — default key **O** (`SkillTreeScreen`): skills, weapon extensions, and perks
+- Skill data loaded from `config/gunsrpg/port_from_gunsrpg/` (300+ nodes, 50+ perks)
+- Bilingual names and descriptions in `assets/gunsrpg/lang/*_skills.json`
+- **Account level** and **weapon level** from firearm kills (`leveling_strategy.json`)
+- **Starter kit** on first join (`config/gunsrpg/starter_kit.json`)
+- Active skills (e.g. emergency airdrop on **G**)
+
+### Firearms & crafting
+
+- **Native `FirearmItem` system** with custom BEWLR models, reload, jamming, fire modes, attachments, and durability
+- **Gunsmith table** (`gunsrpg:gunsmith_table`) — weapon parts, ammo tiers, bone meal, and assembly recipes
+- **Repair station**, **medical station**, and **culinary table**
+- Grenades, grenade launcher, and rocket launcher support
+- Optional **TaCZ** shooting backend (`config/gunsrpg/tacz_backend.json`) for selected weapons when TaCZ is installed
+- **JEI** recipe integration (optional)
+
+### Survival systems
+
+- **Debuffs**: bleeding, fracture, poison, infection (`debuff_config.json`) with HUD overlay and resistance from skills/perks
+- **Airdrop** supply drops (configurable loot tables)
+- **Bloodmoon** world event with custom mobs and client effects
+- **Gunshot alert** — nearby mobs react to gunfire (configurable)
+
+### Hostile mobs
+
+- **Zombie Gunner** — ranged zombie with firearm AI
+- **Explosive Skeleton** — grenade-throwing skeleton
+- **Bloodmoon Golem** and **Rocket Angel** — Bloodmoon bosses
+- Natural spawn replacement and scaling via `mob_spawn.json`, `gunner_loadout.json`, `weapon_levels.json` (includes optional L2 Hostility scaling)
+
+### Compatibility
+
+- **Configuration** library (required) — config UI and sync framework used by the original mod
+- **TaCZ** (optional) — alternate shooting backend and weapon mapping
+- **Sophisticated Backpacks** (optional) — ammo pulled from backpacks when reloading
+- **JEI** (optional)
+
+---
+
+## Requirements
+
+| Dependency | Required | Notes |
+|------------|----------|-------|
+| Minecraft 1.20.1 | Yes | |
+| Forge 47+ | Yes | |
+| [Configuration](https://www.curseforge.com/minecraft/mc-mods/configuration) | Yes | CurseMaven id `444699:4608425` in `build.gradle` |
+| JDK 17 | Yes | For building |
+| TaCZ | No | Enable in `tacz_backend.json` |
+| JEI | No | Recipe viewer |
+
+---
+
+## Building
 
 ```powershell
-cd d:\minecraft\.minecraft\versions\1.20.1-Forge_47.4.20\gunsrpg
+git clone https://github.com/Saitoseason/Guns-RPG.git
+cd Guns-RPG
+git checkout 1.20.1
+
 .\gradlew.bat build
 ```
 
-将 `build/libs/gunsrpg-0.1.0-alpha.jar` 复制到整合包 `mods/`。
+Output JAR: `build/libs/gunsrpg-1.20.1-0.1.0-port.jar`
 
-需 **JDK 17**。首次构建会下载 Forge 与映射，耗时较长。
+Copy the JAR into your instance `mods/` folder together with **Configuration**.
 
-## 数据依赖
+### Modpack development (WF Pack)
 
-确保已存在（对话中已导出）：
+If you work inside the *极限挑战 · 无暇赴死* pack layout:
 
-- `../config/gunsrpg/port_from_gunsrpg/skill_properties/`
-- `../config/gunsrpg/port_from_gunsrpg/perks/`
-- `../config/gunsrpg/port_from_gunsrpg/skill_index.json`
-- `../config/gunsrpg/port_from_gunsrpg/leveling_strategy.json`
+```powershell
+cd gunsrpg-1201
+.\gradlew.bat build
+.\tools\deploy.ps1          # copies the latest jar into the pack mods/ folder
+.\tools\enable-mod.ps1      # re-enable a .disabled jar, or build+deploy if missing
+.\tools\disable-mod.ps1     # temporarily disable without deleting
+```
 
-## 设计文档
+Runtime configs for a running instance live under `<instance>/config/gunsrpg/`.  
+The pack ships a full skill dataset in `config/gunsrpg/port_from_gunsrpg/`.
 
-整合包根目录 `docs/wf_gun_skill_system.md`、`docs/gunsrpg_skill_tree_port.md`。
+---
 
-## UI 算法来源（Guns RPG 原版）
+## Configuration
 
-技能树网格布局移植自开源仓库 [Toma1O6/Guns-RPG](https://github.com/Toma1O6/Guns-RPG)（分支 `1.16.5`）：
+All runtime configs are under **`config/gunsrpg/`**:
 
-- `Tree.java` → `client/gui/layout/GunsRpgTree.java`
-- `SkillTrees.java` → `client/gui/layout/GunsRpgSkillTrees.java`
-- `SkillsView` 画布常量：`xUnit=6`、`yUnit=10`、节点 `22×22`
+| File / folder | Purpose |
+|---------------|---------|
+| `port_from_gunsrpg/` | Skill nodes, perks, leveling strategy, weapon mapping |
+| `starter_kit.json` | First-join starter items and skill points |
+| `debuff_config.json` | Survival debuff tuning |
+| `mob_spawn.json` | Gun mob spawn rules and scaling |
+| `gunner_loadout.json` | Loadouts for zombie gunners / grenadiers |
+| `weapon_levels.json` | Mob weapon level tables |
+| `tacz_backend.json` | TaCZ backend toggle and weapon map |
+| `airdrop.json` | Airdrop timing and loot |
+| `world.json` | Bloodmoon and gunshot-alert settings |
+| `ammo_materials.json` | Ammo crafting material tiers |
+| `weapon_caliber_overrides.json` | Per-weapon caliber overrides |
 
-参考源码副本：`_reference_gunsrpg/`（只读，勿改）。
+Reload most configs in-game (OP): `/gunsrpg reload`
 
-因 1.16.5 → 1.20.1 API 与依赖不同，无法直接编译原版 `SkillTreeScreen`，仅移植布局与连线逻辑；图标纹理后续从 Guns RPG 资源包补齐。
+---
 
-## 下一步
+## Controls
 
-1. 击杀推进 `playerLevel` / `weaponLevel`（对接 CGM）
-2. 节点解锁与 pts 消耗
-3. Perk 数值应用到战斗（替代部分 KubeJS）
-4. `wf_cgm_apoth` 神化 firearm 分类
+| Key | Action |
+|-----|--------|
+| **O** | Open skill tree |
+| **R** | Reload |
+| **U** | Unjam |
+| **B** | Toggle fire mode |
+| **N** / **M** | Sight color / sight type |
+| **G** | Emergency airdrop (requires perk) |
+
+Rebind under **Options → Controls → Guns RPG**.
+
+---
+
+## Commands
+
+All commands are under `/gunsrpg` (OP level noted where restricted).
+
+| Command | Description |
+|---------|-------------|
+| `/gunsrpg status` | Skill DB load status |
+| `/gunsrpg reload` | Reload configs (OP 2) |
+| `/gunsrpg bootstrap` | Re-grant starter kit (OP 2) |
+| `/gunsrpg points <n>` | Add skill points (OP 2) |
+| `/gunsrpg level <n>` | Set account firearm level (OP 2) |
+| `/gunsrpg unlock <skill_id>` | Unlock a skill (OP 2) |
+| `/gunsrpg give gun <weapon_key>` | Give a weapon (OP 2) |
+| `/gunsrpg give spawn_egg <mob>` | Give spawn egg: `zombie_gunner`, `explosive_skeleton`, `bloodmoon_golem`, `rocket_angel` |
+| `/gunsrpg airdrop spawn` | Force an airdrop (OP 2, overworld) |
+| `/gunsrpg bloodmoon start\|stop` | Force Bloodmoon (OP 2) |
+| `/gunsrpg debuff status\|clear\|apply ...` | Debuff debug (OP 2) |
+
+---
+
+## Quick in-game test
+
+```mcfunction
+/gunsrpg give spawn_egg zombie_gunner
+/gunsrpg give spawn_egg explosive_skeleton
+/gunsrpg give gun m1911
+/gunsrpg bloodmoon start
+```
+
+After rebuilding the mod, **fully restart** the game client — hot-swapping the JAR is not supported.
+
+---
+
+## Project layout
+
+```
+gunsrpg-1201/
+├── src/main/java/com/wf/firearms/   # mod source
+├── src/main/resources/assets/gunsrpg/
+├── tools/                           # deploy, icon import, data scripts
+├── reference/                       # read-only reference assets (e.g. TaCZ AK)
+└── build/libs/                      # built JAR
+```
+
+Skill tree grid layout is ported from upstream `Tree.java` / `SkillTrees.java` into `client/gui/layout/GunsRpgTree.java` and `GunsRpgSkillTrees.java`.
+
+---
+
+## Contributing & upstream
+
+1. Fork [Toma1O6/Guns-RPG](https://github.com/Toma1O6/Guns-RPG)
+2. Work on branch **`1.20.1`**
+3. Open a PR against `Toma1O6/Guns-RPG:1.20.1` with build steps and test notes
+
+Please keep commit messages clear (Conventional Commits style is fine).  
+Original author Toma1O6 has expressed interest in community ports and PRs for new Minecraft versions.
+
+---
+
+## Credits
+
+- **Guns RPG (1.16.5)** — [Toma1O6](https://github.com/Toma1O6/Guns-RPG)
+- **1.20.1 port** — Saitoseason / 极限挑战 · 无暇赴死 pack team
+- **Configuration** — Toma1O6
+- Skill tree UI algorithms and design — original Guns RPG codebase
+- Optional **TaCZ** integration — [Timeless and Classics Zero](https://www.curseforge.com/minecraft/mc-mods/timeless-and-classics-zero)
+
+## License
+
+Follows the upstream Guns RPG project terms. See `gradle.properties` (`mod_license`) and the original repository for details.
