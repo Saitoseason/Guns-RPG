@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "gunsrpg:item/desert_eagle_gun_icon"
+  }
+}

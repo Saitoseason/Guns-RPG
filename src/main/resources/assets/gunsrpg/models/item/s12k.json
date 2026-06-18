@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "gunsrpg:item/s12k_gun_icon"
+  }
+}
